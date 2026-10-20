@@ -6,9 +6,15 @@ Uma aplicação web interativa construída puramente com **HTML5, CSS3 e JavaScr
 
 ## 🎯 Contexto da Simulação
 
-Uma **ambulância** (ponto de partida verde `A`) precisa chegar o mais rápido possível a um **hospital** (destino vermelho `H`) atravessando uma malha urbana **40x40** repleta de obstáculos e bloqueios de trânsito.
+Uma **ambulância** (ponto de partida verde `A`) precisa chegar o mais rápido possível a um **hospital** (destino vermelho `H`) atravessando uma **cidade realista** em uma malha urbana **40x40**:
 
+- **Malha viária orgânica:** quarteirões de tamanhos e formatos irregulares (como um bairro que cresceu sem plano diretor), separados por **avenidas** de 2 pistas (asfalto mais escuro, faixa tracejada amarela, **custo 1**) e **ruas** secundárias estreitas (**custo 2**). O mapa inclui becos, ruas sem saída, superquarteirões e eixos que não se alinham de um lado a outro.
+- **Quarteirões variados:** prédios com tonalidades diferentes por quadra, praças, parques (com lagoas) e estacionamentos — os obstáculos continuam intransponíveis, mas a cidade deixa de parecer uma malha uniforme.
+- **Interdições:** trechos de rua aleatoriamente fechados por obras/acidentes (células listradas de laranja) — criam becos sem saída e "armadilhas" para a Busca Gulosa.
+- **Congestionamentos:** manchas contíguas de trânsito pesado ao longo das vias (**custo 3 a 5**). O A\* desvia quando compensa; a Gulosa ignora o custo e atravessa o trânsito.
+- **Rota estilo GPS:** o caminho final é desenhado como uma polilinha grossa e arredondada (como em apps de navegação) e uma **ambulância animada 🚑** "dirige" por ela com sirene pulsante, **desacelerando nas células congestionadas**.
 - **Movimentação permitida:** 4 direções (Cima, Baixo, Esquerda e Direita).
+- **Custo das células:** entrar em uma célula soma o seu custo ao caminho, e $g(n)$ é a soma desses custos.
 - **Heurística utilizada:** Distância de Manhattan:
   $$h(n) = |x_1 - x_2| + |y_1 - y_2|$$
 
@@ -53,10 +59,10 @@ Qualquer computador (Windows, Linux ou macOS) com um navegador de internet (Goog
 
 ## 🎮 Como Usar a Interface
 
-1. **Gerar Mapa com Obstáculos Aleatórios:** Cria instantaneamente um novo cenário urbano 40x40 garantindo que exista pelo menos uma rota possível entre a ambulância e o hospital.
+1. **Gerar Cidade (Mapa Realista):** Cria instantaneamente uma nova cidade com avenidas, ruas, quarteirões irregulares (prédios, praças, parques e estacionamentos), interdições de via e manchas de congestionamento, garantindo que exista pelo menos uma rota possível entre a ambulância e o hospital.
 2. **Executar Busca Gulosa:** Anima a exploração em **Azul Claro** e destaca a rota final encontrada em **Azul Escuro**.
-3. **Executar A\*:** Anima a exploração em **Amarelo Claro** e destaca o caminho ótimo em **Amarelo Escuro**.
+3. **Executar A\*:** Anima a exploração em **Amarelo Claro** e destaca o caminho ótimo em **Amarelo Escuro** — ao final, a ambulância 🚑 dirige pela rota em estilo GPS, desacelerando no trânsito.
 4. **Comparar Ambos:** Executa primeiro a Busca Gulosa e, logo em seguida, sobrepõe o A* no mesmo mapa, preenchendo a tabela comparativa de métricas no painel lateral.
-5. **Limpar Caminhos:** Remove apenas as cores de exploração e caminhos, mantendo os obstáculos atuais intactos para você testar novamente.
-6. **Velocidade da Animação:** Ajuste o controle deslizante (*slider*) em tempo real, desde o modo *Passo a Passo* até *Instantânea / Turbo*.
-7. **Editor Interativo de Mapa:** Clique e arraste diretamente sobre a matriz 40x40 para desenhar/apagar muros e barreiras em formato de "U", ou selecione as ferramentas **Ambulância** / **Hospital** para mudar os pontos de partida e chegada!
+5. **Limpar Caminhos:** Remove apenas as cores de exploração e caminhos, mantendo a cidade atual intacta para você testar novamente.
+6. **Velocidade da Animação:** Ajuste o controle deslizante (*slider*) em tempo real, desde o modo *Passo a Passo* até *Instantânea / Turbo* (também afeta a velocidade da ambulância).
+7. **Editor Interativo de Mapa:** Clique e arraste diretamente sobre a matriz 40x40 para desenhar/apagar obstáculos (simulando novas interdições ou reabrindo vias). Ao usar as ferramentas **Ambulância** / **Hospital**, eles são reposicionados automaticamente para a **rua mais próxima** — como um GPS de verdade.
