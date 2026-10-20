@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rota de Emergência: Busca Gulosa vs A*</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1>🚑 Simulador de Rota de Emergência Urbana</h1>
+            <p>Visualização e comparação interativa entre <strong>Busca Gulosa (Greedy Best-First)</strong> e <strong>Algoritmo A* (A-Estrela)</strong> em uma malha urbana 40x40.</p>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Painel Lateral de Controles e Métricas -->
+        <aside class="sidebar">
+            <!-- Controles de Mapa e Algoritmos -->
+            <section class="card">
+                <h2>🎮 Controles de Simulação</h2>
+                <div class="btn-group">
+                    <button id="btn-greedy" class="btn btn-greedy">
+                        ▶ Executar Busca Gulosa
+                    </button>
+                    <button id="btn-astar" class="btn btn-astar">
+                        ▶ Executar A*
+                    </button>
+                    <button id="btn-both" class="btn btn-both" title="Executa a Busca Gulosa seguida do A* no mesmo mapa para comparar">
+                        ⚖️ Comparar Ambos
+                    </button>
+                </div>
+
+                <hr class="divider">
+
+                <div class="btn-group">
+                    <button id="btn-random" class="btn btn-secondary">
+                        🎲 Gerar Mapa com Obstáculos Aleatórios
+                    </button>
+                    <button id="btn-clear-paths" class="btn btn-secondary">
+                        🧹 Limpar Caminhos
+                    </button>
+                    <button id="btn-clear-all" class="btn btn-outline">
+                        🗑️ Limpar Tudo (Mapa Vazio)
+                    </button>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="speed-slider">⚡ Velocidade da Animação:</label>
+                        <span id="speed-label" class="badge">Rápida</span>
+                    </div>
+                    <input type="range" id="speed-slider" min="1" max="100" value="75">
+                </div>
+            </section>
+
+            <!-- Ferramentas de Edição Manual -->
+            <section class="card">
+                <h2>🛠️ Editor de Mapa (Clique/Arraste)</h2>
+                <div class="tool-selector">
+                    <label class="tool-option">
+                        <input type="radio" name="draw-tool" value="wall" checked>
+                        <span class="tool-badge wall-badge">🧱 Obstáculo</span>
+                    </label>
+                    <label class="tool-option">
+                        <input type="radio" name="draw-tool" value="start">
+                        <span class="tool-badge start-badge">🚑 Ambulância</span>
+                    </label>
+                    <label class="tool-option">
+                        <input type="radio" name="draw-tool" value="end">
+                        <span class="tool-badge end-badge">🏥 Hospital</span>
+                    </label>
+                </div>
+                <p class="helper-text">Dica: Clique e arraste sobre a matriz para desenhar ou apagar obstáculos urbanos.</p>
+            </section>
+
+            <!-- Dashboard de Métricas -->
+            <section class="card metrics-dashboard">
+                <h2>📊 Dashboard de Métricas</h2>
+
+                <!-- Painel da Execução Atual -->
+                <div class="active-metrics">
+                    <div class="metric-row">
+                        <span class="metric-label">Algoritmo Ativo:</span>
+                        <span id="metric-algo" class="metric-value">—</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Status:</span>
+                        <span id="metric-status" class="status-pill status-idle">Aguardando</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Custo do Caminho (passos):</span>
+                        <span id="metric-cost" class="metric-value highlight">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Nós Explorados:</span>
+                        <span id="metric-explored" class="metric-value highlight">0</span>
+                    </div>
+                </div>
+
+                <!-- Tabela Comparativa no Mesmo Mapa -->
+                <div class="comparison-box">
+                    <h3>Comparativo no Mapa Atual</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                <th class="col-greedy">Busca Gulosa</th>
+                                <th class="col-astar">A* (A-Estrela)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Status</td>
+                                <td id="comp-greedy-status">—</td>
+                                <td id="comp-astar-status">—</td>
+                            </tr>
+                            <tr>
+                                <td>Custo (passos)</td>
+                                <td id="comp-greedy-cost">—</td>
+                                <td id="comp-astar-cost">—</td>
+                            </tr>
+                            <tr>
+                                <td>Nós Explorados</td>
+                                <td id="comp-greedy-explored">—</td>
+                                <td id="comp-astar-explored">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Área Principal do Grid e Legenda -->
+        <section class="grid-section">
+            <div class="legend-bar">
+                <div class="legend-item">
+                    <span class="swatch swatch-start">🚑</span>
+                    <span>Partida (Ambulância) - Verde</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-end">🏥</span>
+                    <span>Destino (Hospital) - Vermelho</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-wall"></span>
+                    <span>Obstáculo Urbano - Preto</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-greedy-exp"></span>
+                    <span>Exploração (Gulosa) - Azul Claro</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-greedy-path"></span>
+                    <span>Caminho Final (Gulosa) - Azul Escuro</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-astar-exp"></span>
+                    <span>Exploração (A*) - Amarelo Claro</span>
+                </div>
+                <div class="legend-item">
+                    <span class="swatch swatch-astar-path"></span>
+                    <span>Caminho Final (A*) - Amarelo Escuro</span>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="grid-canvas" width="720" height="720" aria-label="Matriz 40x40 de simulação urbana"></canvas>
+            </div>
+
+            <div class="formula-bar">
+                <div class="formula-card">
+                    <strong>Distância de Manhattan:</strong> <code>h(n) = |x₁ - x₂| + |y₁ - y₂|</code> (Movimentação em 4 direções: Cima, Baixo, Esquerda, Direita)
+                </div>
+                <div class="formula-card">
+                    <strong>Busca Gulosa:</strong> <code>f(n) = h(n)</code> (Foca apenas na estimativa até o hospital; rápida, mas não garante o menor caminho)
+                </div>
+                <div class="formula-card">
+                    <strong>Algoritmo A*:</strong> <code>f(n) = g(n) + h(n)</code> (Soma passos percorridos <code>g(n)</code> + heurística <code>h(n)</code>; garante o caminho ótimo!)
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

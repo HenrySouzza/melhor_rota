@@ -1,0 +1,478 @@
+:root {
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-inner: #0f172a;
+    --border-color: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    /* Cores de Alto Contraste Especificadas */
+    --color-start: #16a34a;          /* Verde (Ambulância) */
+    --color-end: #dc2626;            /* Vermelho (Hospital) */
+    --color-wall: #1e293b;           /* Preto / Cinza Escuro (Obstáculos) */
+    --color-greedy-exp: #7dd3fc;     /* Azul Claro (Exploração Gulosa) */
+    --color-greedy-path: #1d4ed8;    /* Azul Escuro (Caminho Final Gulosa) */
+    --color-astar-exp: #fef08a;      /* Amarelo Claro (Exploração A*) */
+    --color-astar-path: #b45309;     /* Amarelo Escuro / Âmbar (Caminho Final A*) */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cabeçalho */
+.app-header {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-content {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.app-header p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+}
+
+/* Layout Principal */
+.app-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 370px 1fr;
+    gap: 1.5rem;
+    flex: 1;
+    align-items: start;
+}
+
+/* Barra Lateral */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.15rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.card h2 {
+    font-size: 1.05rem;
+    margin-bottom: 0.85rem;
+    color: #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.45rem;
+}
+
+/* Botões */
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #ffffff;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:not(:disabled):hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.btn:not(:disabled):active {
+    transform: translateY(0);
+}
+
+.btn-greedy {
+    background-color: #0284c7;
+    border: 1px solid #38bdf8;
+}
+
+.btn-astar {
+    background-color: #d97706;
+    border: 1px solid #fbbf24;
+}
+
+.btn-both {
+    background: linear-gradient(90deg, #0284c7 0%, #d97706 100%);
+    border: 1px solid #94a3b8;
+}
+
+.btn-secondary {
+    background-color: #334155;
+    border: 1px solid #475569;
+    color: #f1f5f9;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid #475569;
+    color: #cbd5e1;
+}
+
+.btn-outline:not(:disabled):hover {
+    background-color: #334155;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 0.85rem 0;
+}
+
+/* Controle Deslizante (Slider) */
+.slider-container {
+    margin-top: 0.95rem;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 0.88rem;
+}
+
+.badge {
+    background-color: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #38bdf8;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+}
+
+/* Seletor de Ferramentas de Desenho */
+.tool-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.tool-option {
+    cursor: pointer;
+}
+
+.tool-option input {
+    display: none;
+}
+
+.tool-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.3rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    background-color: var(--bg-card-inner);
+    border: 2px solid var(--border-color);
+    text-align: center;
+    transition: all 0.15s ease;
+}
+
+.tool-option input:checked + .tool-badge {
+    border-color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.15);
+    color: #ffffff;
+}
+
+.helper-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Dashboard de Métricas */
+.active-metrics {
+    background-color: var(--bg-card-inner);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.metric-label {
+    color: var(--text-secondary);
+}
+
+.metric-value {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.metric-value.highlight {
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Pills de Status */
+.status-pill {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.status-idle {
+    background-color: #334155;
+    color: #cbd5e1;
+}
+
+.status-running {
+    background-color: #0284c7;
+    color: #ffffff;
+    animation: pulse 1.2s infinite;
+}
+
+.status-success {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.status-fail {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+}
+
+/* Tabela Comparativa */
+.comparison-box h3 {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background-color: var(--bg-card-inner);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th:first-child,
+.comparison-table td:first-child {
+    text-align: left;
+    color: var(--text-secondary);
+}
+
+.comparison-table .col-greedy {
+    color: #7dd3fc;
+}
+
+.comparison-table .col-astar {
+    color: #fde047;
+}
+
+/* Seção Principal da Matriz (Canvas) */
+.grid-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.legend-bar {
+    width: 100%;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem 1.25rem;
+    font-size: 0.84rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.swatch-start {
+    background-color: var(--color-start);
+}
+
+.swatch-end {
+    background-color: var(--color-end);
+}
+
+.swatch-wall {
+    background-color: var(--color-wall);
+}
+
+.swatch-greedy-exp {
+    background-color: var(--color-greedy-exp);
+}
+
+.swatch-greedy-path {
+    background-color: var(--color-greedy-path);
+}
+
+.swatch-astar-exp {
+    background-color: var(--color-astar-exp);
+}
+
+.swatch-astar-path {
+    background-color: var(--color-astar-path);
+}
+
+/* Container do Canvas 40x40 */
+.canvas-wrapper {
+    background-color: #ffffff;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+    border: 2px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+}
+
+#grid-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    background-color: #ffffff;
+}
+
+/* Barra de Fórmulas Didáticas */
+.formula-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+}
+
+.formula-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.formula-card strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.formula-card code {
+    background-color: var(--bg-card-inner);
+    color: #38bdf8;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Responsividade */
+@media (max-width: 1100px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+
+    .formula-bar {
+        grid-template-columns: 1fr;
+    }
+}
